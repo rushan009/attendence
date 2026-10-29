@@ -1,0 +1,201 @@
+/* ═══════════════════════════════════════════════════════════════
+   भानु माध्यमिक विद्यालय — Design Tokens & Base Styles
+   Aesthetic: Clean, calm, professional. Navy + Royal Blue.
+   ═══════════════════════════════════════════════════════════════ */
+
+@import "tailwindcss";
+
+/* ── Design Tokens via Tailwind v4 @theme ────────────────────── */
+@theme {
+  /* Core palette */
+  --color-paper:            #FAF8F5;
+  --color-surface:          #FFFFFF;
+  --color-soft-surface:     #FFFFFF;
+  --color-structure:        #1E293B;
+  --color-structure-hover:  #334155;
+  --color-ink:              #0F172A;
+  --color-secondary:        #475569;
+  --color-border:           #E2E8F0;
+  --color-border-subtle:    #E2E8F0;
+  --color-inverse:          #FAF8F5;
+
+  /* Navy sidebar / header on-dark text */
+  --color-navy-muted:       #94A3B8;
+  --color-navy-active-bg:   #334155;
+  --color-navy-active-bar:  #3B82F6;
+
+  /* Primary action: Royal blue */
+  --color-primary:          #2563EB;
+  --color-primary-hover:    #1D4ED8;
+
+  /* Legacy aliases (kept so old token references still resolve) */
+  --color-forest:           #2563EB;
+  --color-forest-light:     #3B82F6;
+  --color-forest-hover:     #1D4ED8;
+
+  /* Status: Present / Active / Success */
+  --color-success-bg:       #E7F3EC;
+  --color-success:          #166534;
+
+  /* Status: Absent / Error / Destructive */
+  --color-error-bg:         #FBE9E9;
+  --color-error:            #991B1B;
+  --color-terracotta:       #991B1B;
+  --color-terracotta-soft:  #FBE9E9;
+  --color-vermilion:        #991B1B;
+  --color-vermilion-soft:   #FBE9E9;
+
+  /* Status: Late / Warning / Low attendance */
+  --color-warning-bg:       #FEF3C7;
+  --color-warning:          #92400E;
+  --color-brass:            #92400E;
+  --color-brass-soft:       #FEF3C7;
+
+  /* Typography */
+  --font-sans:       'Plus Jakarta Sans', 'Noto Sans Devanagari', system-ui, sans-serif;
+  --font-serif:      'Plus Jakarta Sans', 'Noto Sans Devanagari', system-ui, sans-serif;
+  --font-mono:       'Plus Jakarta Sans', 'Noto Sans Devanagari', system-ui, sans-serif;
+  --font-devanagari: 'Noto Sans Devanagari', 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+/* ── Base Styles ─────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  color: var(--color-ink);
+  background-color: var(--color-paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+/* Tabular figures for numbers in tables */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Selection ───────────────────────────────────────────────── */
+::selection {
+  background-color: rgba(37, 99, 235, 0.15);
+  color: #0F172A;
+}
+
+/* ── Accessible Focus Ring (2px royal blue with offset) ──────── */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ── Transitions ─────────────────────────────────────────────── */
+button,
+a,
+input,
+select,
+textarea,
+[role="button"] {
+  transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease, opacity 150ms ease;
+}
+
+/* ── Subtle Divider Utility ──────────────────────────────────── */
+hr {
+  border-color: var(--color-border);
+  opacity: 0.7;
+}
+
+/* ── Card shadow utility ─────────────────────────────────────── */
+.card-shadow {
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+/* ── Skeleton loading animation ──────────────────────────────── */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.skeleton {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  background-color: var(--color-border);
+  border-radius: 6px;
+}
+
+/* ── Reduced Motion ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Print Media Styles ──────────────────────────────────────── */
+@media print {
+  /* Hide application shell elements, navigation, buttons, and filter column */
+  header,
+  aside,
+  nav,
+  button,
+  .no-print,
+  [data-no-print="true"] {
+    display: none !important;
+  }
+
+  /* Reset body and background to pure white for crisp paper contrast */
+  html,
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Ensure main container takes full width without scrollbars */
+  main,
+  #root,
+  .print-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  /* Force display of print-only heading */
+  .print-only {
+    display: block !important;
+  }
+
+  /* Clean tabular print borders */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    color: #000000 !important;
+  }
+
+  th,
+  td {
+    border: 1px solid #9ca3af !important;
+    padding: 6px 10px !important;
+    color: #000000 !important;
+    background: transparent !important;
+  }
+
+  th {
+    background-color: #f3f4f6 !important;
+    font-weight: 600 !important;
+  }
+
+  /* Prevent row splitting across pages */
+  tr {
+    page-break-inside: avoid;
+  }
+}
