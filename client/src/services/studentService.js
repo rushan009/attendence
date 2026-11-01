@@ -1,33 +1,4 @@
-import axios from 'axios'
-
-/**
- * Axios instance configured for Student endpoints.
- * Configured with httpOnly cookie credentials and matching adminService setup.
- */
-const API_ROOT = (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
-
-const api = axios.create({
-  baseURL: `${API_ROOT}/api`,
-  withCredentials: true,
-  timeout: 12000,
-})
-
-function handleAxiosError(error) {
-  if (error.response) {
-    const message = error.response.data?.message || `Request failed with status ${error.response.status}`
-    const normalized = new Error(message)
-    normalized.status = error.response.status
-    normalized.data = error.response.data
-    return normalized
-  }
-  if (error.request) {
-    const normalized = new Error('Cannot reach school server. Please verify your connection.')
-    normalized.status = 0
-    normalized.isNetworkError = true
-    return normalized
-  }
-  return error
-}
+import api, { handleAxiosError } from './api.js'
 
 /**
  * Admin: Get students belonging to a specific class.
@@ -37,7 +8,7 @@ function handleAxiosError(error) {
  */
 export async function getStudentsByClass(classId) {
   try {
-    const res = await api.get('/students', {
+    const res = await api.get('/api/students', {
       params: { classId },
     })
     return res.data
@@ -53,7 +24,7 @@ export async function getStudentsByClass(classId) {
  */
 export async function getMyClassStudents() {
   try {
-    const res = await api.get('/students/my-class')
+    const res = await api.get('/api/students/my-class')
     return res.data
   } catch (err) {
     throw handleAxiosError(err)
@@ -73,7 +44,7 @@ export async function importStudents(file, classId) {
       formData.append('classId', classId)
     }
 
-    const res = await api.post('/students/import', formData, {
+    const res = await api.post('/api/students/import', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -92,7 +63,7 @@ export async function importStudents(file, classId) {
  */
 export async function createStudent(payload) {
   try {
-    const res = await api.post('/students', payload)
+    const res = await api.post('/api/students', payload)
     return res.data
   } catch (err) {
     throw handleAxiosError(err)
@@ -108,7 +79,7 @@ export async function createStudent(payload) {
  */
 export async function updateStudent(id, payload) {
   try {
-    const res = await api.put(`/students/${id}`, payload)
+    const res = await api.put(`/api/students/${id}`, payload)
     return res.data
   } catch (err) {
     throw handleAxiosError(err)
@@ -124,7 +95,7 @@ export async function updateStudent(id, payload) {
  */
 export async function setStudentStatus(id, status) {
   try {
-    const res = await api.patch(`/students/${id}/status`, { status })
+    const res = await api.patch(`/api/students/${id}/status`, { status })
     return res.data
   } catch (err) {
     throw handleAxiosError(err)

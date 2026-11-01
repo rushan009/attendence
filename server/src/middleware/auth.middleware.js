@@ -8,8 +8,22 @@ import User from "../models/user.model.js";
  */
 export const authenticate = async (req, res, next) => {
   try {
-    const cookieName = process.env.COOKIE_NAME || "token";
-    const token = req.cookies?.[cookieName];
+    let token = null;
+
+    // 1. Read token from Authorization: Bearer <token> header first
+    const authHeader = req.headers.authorization;
+    if (authHeader && typeof authHeader === "string") {
+      const parts = authHeader.trim().split(" ");
+      if (parts.length === 2 && parts[0].toLowerCase() === "bearer") {
+        token = parts[1];
+      }
+    }
+
+    // 2. Fallback to httpOnly cookie
+    if (!token) {
+      const cookieName = process.env.COOKIE_NAME || "token";
+      token = req.cookies?.[cookieName];
+    }
 
     if (!token) {
       return res.status(401).json({

@@ -1,42 +1,10 @@
-import axios from 'axios'
-
-/**
- * Axios instance configured for Admin Workspace endpoints.
- * Operates with httpOnly credentials.
- */
-const API_ROOT = (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
-
-const api = axios.create({
-  baseURL: `${API_ROOT}/api/admin`,
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  timeout: 12000,
-})
-
-function handleAxiosError(error) {
-  if (error.response) {
-    const message = error.response.data?.message || `Request failed with status ${error.response.status}`
-    const normalized = new Error(message)
-    normalized.status = error.response.status
-    normalized.data = error.response.data
-    return normalized
-  }
-  if (error.request) {
-    const normalized = new Error('Cannot reach school server. Please verify your connection.')
-    normalized.status = 0
-    normalized.isNetworkError = true
-    return normalized
-  }
-  return error
-}
+import api, { handleAxiosError } from './api.js'
 
 // ─── Classes & Sections ──────────────────────────────────────────────
 
 export async function getClasses() {
   try {
-    const res = await api.get('/classes')
+    const res = await api.get('/api/admin/classes')
     return res.data
   } catch (err) {
     throw handleAxiosError(err)
@@ -45,7 +13,7 @@ export async function getClasses() {
 
 export async function createClass({ name, section, teacherId }) {
   try {
-    const res = await api.post('/classes', {
+    const res = await api.post('/api/admin/classes', {
       name: name.trim(),
       section: section ? section.trim() : '',
       teacherId: teacherId || null,
@@ -63,7 +31,7 @@ export async function updateClass(classId, { name, section, teacherId }) {
     if (section !== undefined) payload.section = section ? section.trim() : ''
     if (teacherId !== undefined) payload.teacherId = teacherId || null
 
-    const res = await api.patch(`/classes/${classId}`, payload)
+    const res = await api.patch(`/api/admin/classes/${classId}`, payload)
     return res.data
   } catch (err) {
     throw handleAxiosError(err)
@@ -72,7 +40,7 @@ export async function updateClass(classId, { name, section, teacherId }) {
 
 export async function deleteClass(classId) {
   try {
-    const res = await api.delete(`/classes/${classId}`)
+    const res = await api.delete(`/api/admin/classes/${classId}`)
     return res.data
   } catch (err) {
     throw handleAxiosError(err)
@@ -83,7 +51,7 @@ export async function deleteClass(classId) {
 
 export async function getTeachers(status) {
   try {
-    const res = await api.get('/teachers', {
+    const res = await api.get('/api/admin/teachers', {
       params: status ? { status } : undefined,
     })
     return res.data
@@ -94,7 +62,7 @@ export async function getTeachers(status) {
 
 export async function updateTeacherStatus(teacherId, status) {
   try {
-    const res = await api.patch(`/teachers/${teacherId}/status`, { status })
+    const res = await api.patch(`/api/admin/teachers/${teacherId}/status`, { status })
     return res.data
   } catch (err) {
     throw handleAxiosError(err)
@@ -103,7 +71,7 @@ export async function updateTeacherStatus(teacherId, status) {
 
 export async function assignTeacherClass(teacherId, classId) {
   try {
-    const res = await api.patch(`/teachers/${teacherId}/class`, {
+    const res = await api.patch(`/api/admin/teachers/${teacherId}/class`, {
       classId: classId || null,
     })
     return res.data
@@ -116,7 +84,7 @@ export async function assignTeacherClass(teacherId, classId) {
 
 export async function getClassStudents(classId) {
   try {
-    const res = await api.get(`/classes/${classId}/students`)
+    const res = await api.get(`/api/admin/classes/${classId}/students`)
     return res.data
   } catch (err) {
     throw handleAxiosError(err)
@@ -125,7 +93,7 @@ export async function getClassStudents(classId) {
 
 export async function createStudent(classId, { name, roll, gender, guardianPhone }) {
   try {
-    const res = await api.post(`/classes/${classId}/students`, {
+    const res = await api.post(`/api/admin/classes/${classId}/students`, {
       name: name.trim(),
       roll: Number(roll),
       gender: gender || '',
@@ -145,7 +113,7 @@ export async function updateStudent(studentId, { name, roll, gender, guardianPho
     if (gender !== undefined) payload.gender = gender || ''
     if (guardianPhone !== undefined) payload.guardianPhone = guardianPhone ? guardianPhone.trim() : ''
 
-    const res = await api.patch(`/students/${studentId}`, payload)
+    const res = await api.patch(`/api/admin/students/${studentId}`, payload)
     return res.data
   } catch (err) {
     throw handleAxiosError(err)
@@ -154,7 +122,7 @@ export async function updateStudent(studentId, { name, roll, gender, guardianPho
 
 export async function deleteStudent(studentId) {
   try {
-    const res = await api.delete(`/students/${studentId}`)
+    const res = await api.delete(`/api/admin/students/${studentId}`)
     return res.data
   } catch (err) {
     throw handleAxiosError(err)

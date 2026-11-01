@@ -6,8 +6,9 @@ const AuthContext = createContext(null)
 /**
  * AuthProvider wraps the application to provide shared authentication state.
  *
- * Restores session automatically on initial mount via GET /me (httpOnly cookie).
- * Tokens are never stored in localStorage or JavaScript memory.
+ * Supports both token-based auth (Authorization: Bearer header via localStorage key "auth_token")
+ * and httpOnly cookies for local development.
+ * Restores session automatically on initial mount via GET /api/auth/me.
  */
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
@@ -27,6 +28,11 @@ export function AuthProvider({ children }) {
       .catch(() => {
         // Not authenticated or expired session — expected for guest
         if (!cancelled) {
+          try {
+            localStorage.removeItem('auth_token')
+          } catch {
+            // Ignore storage errors
+          }
           setUser(null)
         }
       })
@@ -36,19 +42,33 @@ export function AuthProvider({ children }) {
         }
       })
 
+    // Listen for unauthorized 401 events dispatched by central axios interceptor
+    const handleUnauthorized = () => {
+      setUser(null)
+    }
+    window.addEventListener('auth:unauthorized', handleUnauthorized)
+
     return () => {
       cancelled = true
+      window.removeEventListener('auth:unauthorized', handleUnauthorized)
     }
   }, [])
 
   /**
    * Performs login with phone number and PIN.
-   * On success, sets trusted backend user object into state.
+   * On success, stores JWT token and sets trusted backend user object into state.
    */
   const login = useCallback(async ({ phone, pin }) => {
     setAuthError(null)
     try {
       const data = await authService.login({ phone, pin })
+      if (data?.token) {
+        try {
+          localStorage.setItem('auth_token', data.token)
+        } catch {
+          // Ignore storage errors
+        }
+      }
       if (data?.user) {
         setUser(data.user)
       }
@@ -75,12 +95,17 @@ export function AuthProvider({ children }) {
   }, [])
 
   /**
-   * Performs logout by clearing httpOnly cookie on server.
+   * Performs logout by calling backend logout and clearing stored auth token.
    */
   const logout = useCallback(async () => {
     try {
       await authService.logout()
     } finally {
+      try {
+        localStorage.removeItem('auth_token')
+      } catch {
+        // Ignore storage errors
+      }
       setUser(null)
       setAuthError(null)
     }
@@ -97,6 +122,11 @@ export function AuthProvider({ children }) {
       }
       return data.user
     } catch {
+      try {
+        localStorage.removeItem('auth_token')
+      } catch {
+        // Ignore storage errors
+      }
       setUser(null)
       return null
     }

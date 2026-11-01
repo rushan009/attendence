@@ -14,6 +14,9 @@ dotenv.config();
 
 const app = express();
 
+// Trust reverse proxy (Render, Cloudflare, etc.)
+app.set("trust proxy", 1);
+
 // CORS configuration supporting FRONTEND_URL with credentials enabled
 const rawFrontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
 const allowedOrigins = rawFrontendUrl
@@ -21,12 +24,14 @@ const allowedOrigins = rawFrontendUrl
   .map((url) => url.trim().replace(/\/$/, ""))
   .filter(Boolean);
 
-app.use(
-  cors({
-    origin: allowedOrigins.length === 1 ? allowedOrigins[0] : allowedOrigins,
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: allowedOrigins.length === 1 ? allowedOrigins[0] : allowedOrigins,
+  credentials: true,
+  allowedHeaders: ["Authorization", "Content-Type"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+};
+
+app.use(cors(corsOptions));
 
 // Keep-alive health check for Render / monitoring (no DB queries, no auth)
 app.get("/health", (req, res) => {

@@ -1,40 +1,4 @@
-import axios from 'axios'
-
-/**
- * Axios instance configured for Attendance endpoints.
- * Operates with httpOnly session cookies and credentials.
- */
-const API_ROOT = (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
-
-const api = axios.create({
-  baseURL: `${API_ROOT}/api/attendance`,
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  timeout: 12000,
-})
-
-function handleAxiosError(error) {
-  if (error.response) {
-    const message =
-      error.response.data?.message ||
-      `Request failed with status ${error.response.status}`
-    const normalized = new Error(message)
-    normalized.status = error.response.status
-    normalized.data = error.response.data
-    return normalized
-  }
-  if (error.request) {
-    const normalized = new Error(
-      'Cannot reach school server. Please verify your connection.'
-    )
-    normalized.status = 0
-    normalized.isNetworkError = true
-    return normalized
-  }
-  return error
-}
+import api, { handleAxiosError } from './api.js'
 
 /**
  * Teacher: Fetch today's class, students roster, and attendance status.
@@ -43,7 +7,7 @@ function handleAxiosError(error) {
  */
 export async function getTodayAttendance() {
   try {
-    const res = await api.get('/today')
+    const res = await api.get('/api/attendance/today')
     return res.data
   } catch (err) {
     throw handleAxiosError(err)
@@ -58,7 +22,7 @@ export async function getTodayAttendance() {
  */
 export async function submitAttendance(absentees = []) {
   try {
-    const res = await api.post('/', { absentees })
+    const res = await api.post('/api/attendance', { absentees })
     return res.data
   } catch (err) {
     throw handleAxiosError(err)
@@ -73,7 +37,7 @@ export async function submitAttendance(absentees = []) {
  */
 export async function getAttendanceRecords(params = {}) {
   try {
-    const res = await api.get('/', { params })
+    const res = await api.get('/api/attendance', { params })
     return res.data
   } catch (err) {
     throw handleAxiosError(err)
@@ -88,7 +52,7 @@ export async function getAttendanceRecords(params = {}) {
  */
 export async function getAttendanceById(id) {
   try {
-    const res = await api.get(`/${id}`)
+    const res = await api.get(`/api/attendance/${id}`)
     return res.data
   } catch (err) {
     throw handleAxiosError(err)
@@ -104,7 +68,7 @@ export async function getAttendanceById(id) {
  */
 export async function updateAttendance(id, absentees = []) {
   try {
-    const res = await api.put(`/${id}`, { absentees })
+    const res = await api.put(`/api/attendance/${id}`, { absentees })
     return res.data
   } catch (err) {
     throw handleAxiosError(err)
@@ -119,7 +83,7 @@ export async function updateAttendance(id, absentees = []) {
  */
 export async function getAttendanceReport(params = {}) {
   try {
-    const res = await api.get('/report', { params })
+    const res = await api.get('/api/attendance/report', { params })
     return res.data
   } catch (err) {
     throw handleAxiosError(err)
@@ -134,7 +98,7 @@ export async function getAttendanceReport(params = {}) {
  */
 export async function downloadAttendanceReport(params = {}) {
   try {
-    const res = await api.get('/report/export', {
+    const res = await api.get('/api/attendance/report/export', {
       params,
       responseType: 'blob',
     })
@@ -152,7 +116,7 @@ export async function downloadAttendanceReport(params = {}) {
  */
 export async function getAttendanceHistory(params = {}) {
   try {
-    const res = await api.get('/history', { params })
+    const res = await api.get('/api/attendance/history', { params })
     return res.data
   } catch (err) {
     throw handleAxiosError(err)
@@ -168,7 +132,7 @@ export async function getAttendanceHistory(params = {}) {
  */
 export async function getStudentAttendance(studentId, params = {}) {
   try {
-    const res = await api.get(`/student/${studentId}`, { params })
+    const res = await api.get(`/api/attendance/student/${studentId}`, { params })
     return res.data
   } catch (err) {
     throw handleAxiosError(err)
