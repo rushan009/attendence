@@ -3,6 +3,20 @@ import { Link } from 'react-router-dom'
 import { schoolConfig } from '../config/schoolConfig.js'
 import { SAMPLE_STUDENTS, SAMPLE_PREVIEW_META } from '../data/mockAttendance.js'
 import BrandWordmark from '../components/BrandWordmark.jsx'
+import SchoolGallery from '../components/SchoolGallery.jsx'
+import {
+  himalayaSchoolView,
+  campusVolleyball,
+  sunflowerGardens,
+  academicBuildings,
+  schoolLeadership,
+  schoolMottoBoard,
+  facultyMeeting,
+  assemblyStage,
+  studentCraft,
+  culturalMuseum,
+  himalayanPeaks,
+} from '../assets/schoolImages.js'
 
 /* ─── Attendance Preview (Illustrative Sample Record) ─────────────────── */
 
@@ -824,6 +838,9 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+
+        {/* ── Section C2: Campus Gallery ──────────────── */}
+        <SchoolGallery />
 
         {/* ── Section D: Daily Workflow ──────────────── */}
         <section id="how-it-works" className="py-16 md:py-24 border-t border-slate-200 bg-white scroll-mt-14">

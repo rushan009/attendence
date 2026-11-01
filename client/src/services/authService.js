@@ -5,8 +5,10 @@ import axios from 'axios'
  * All auth endpoints rely on httpOnly cookies set by the backend.
  * withCredentials: true ensures cookies are passed and stored securely.
  */
+const API_ROOT = (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
+
 const api = axios.create({
-  baseURL: import.meta?.env?.VITE_API_BASE_URL || '/api/auth',
+  baseURL: `${API_ROOT}/api/auth`,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',

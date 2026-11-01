@@ -4,8 +4,10 @@ import axios from 'axios'
  * Axios instance configured for Attendance endpoints.
  * Operates with httpOnly session cookies and credentials.
  */
+const API_ROOT = (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
+
 const api = axios.create({
-  baseURL: '/api/attendance',
+  baseURL: `${API_ROOT}/api/attendance`,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',

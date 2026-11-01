@@ -4,8 +4,10 @@ import axios from 'axios'
  * Axios instance configured for Admin Workspace endpoints.
  * Operates with httpOnly credentials.
  */
+const API_ROOT = (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
+
 const api = axios.create({
-  baseURL: '/api/admin',
+  baseURL: `${API_ROOT}/api/admin`,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',

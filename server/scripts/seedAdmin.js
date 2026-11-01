@@ -61,6 +61,7 @@ const seedAdmin = async () => {
       pinHash,
       role: "admin",
       status: "approved", // explicitly set as approved
+      approved: true,
     });
 
     console.log("Admin account successfully created!");

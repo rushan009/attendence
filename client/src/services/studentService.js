@@ -4,8 +4,10 @@ import axios from 'axios'
  * Axios instance configured for Student endpoints.
  * Configured with httpOnly cookie credentials and matching adminService setup.
  */
+const API_ROOT = (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: `${API_ROOT}/api`,
   withCredentials: true,
   timeout: 12000,
 })

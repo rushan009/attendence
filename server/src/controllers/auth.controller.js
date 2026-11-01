@@ -168,13 +168,13 @@ export const login = async (req, res, next) => {
       { expiresIn: "7d" }
     );
 
-    // Set JWT in httpOnly cookie
+    // Set JWT in httpOnly cookie (in production with cross-origin domains, requires sameSite: 'none' and secure: true)
     const cookieName = process.env.COOKIE_NAME || "token";
     const isProduction = process.env.NODE_ENV === "production";
 
     res.cookie(cookieName, token, {
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: isProduction ? "none" : "lax",
       secure: isProduction,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
     });
@@ -208,7 +208,7 @@ export const logout = (req, res) => {
 
   res.clearCookie(cookieName, {
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: isProduction ? "none" : "lax",
     secure: isProduction,
   });
 

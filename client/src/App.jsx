@@ -24,6 +24,7 @@ import TeacherImportStudentsPage from './pages/teacher/ImportStudentsPage.jsx'
 import ClassReportsPage from './pages/teacher/ClassReportsPage.jsx'
 import TeacherProfilePage from './pages/teacher/TeacherProfilePage.jsx'
 import NotFoundPage from './pages/NotFoundPage.jsx'
+import InstallPrompt from './components/InstallPrompt.jsx'
 
 /**
  * Main Application Router with Authentication and Role Guards.
@@ -102,6 +103,7 @@ function App() {
           {/* 404 Fallback */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+        <InstallPrompt />
       </BrowserRouter>
     </AuthProvider>
   )

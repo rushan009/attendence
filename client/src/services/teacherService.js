@@ -4,8 +4,10 @@ import axios from 'axios'
  * Axios instance configured for Teacher Workspace endpoints.
  * Operates with httpOnly session cookies.
  */
+const API_ROOT = (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
+
 const api = axios.create({
-  baseURL: '/api/teacher',
+  baseURL: `${API_ROOT}/api/teacher`,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',

@@ -2,6 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 import authRoutes from "./routes/auth.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import teacherRoutes from "./routes/teacher.routes.js";
@@ -13,14 +14,24 @@ dotenv.config();
 
 const app = express();
 
-// CORS configuration limited to FRONTEND_URL with credentials enabled
-const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+// CORS configuration supporting FRONTEND_URL with credentials enabled
+const rawFrontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+const allowedOrigins = rawFrontendUrl
+  .split(",")
+  .map((url) => url.trim().replace(/\/$/, ""))
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: frontendUrl,
+    origin: allowedOrigins.length === 1 ? allowedOrigins[0] : allowedOrigins,
     credentials: true,
   })
 );
+
+// Keep-alive health check for Render / monitoring (no DB queries, no auth)
+app.get("/health", (req, res) => {
+  res.status(200).send("ok");
+});
 
 // Cookie parser and JSON body parser with strict size limit
 app.use(cookieParser());
@@ -28,7 +39,16 @@ app.use(express.json({ limit: "10kb" }));
 
 // Basic health check route
 app.get("/api/health", (req, res) => {
-  res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+  const dbState = mongoose.connection.readyState;
+  const stateLabels = { 0: "disconnected", 1: "connected", 2: "connecting", 3: "disconnecting" };
+  const isHealthy = dbState === 1;
+
+  res.status(isHealthy ? 200 : 503).json({
+    status: isHealthy ? "ok" : "degraded",
+    database: stateLabels[dbState] || "unknown",
+    dbName: mongoose.connection.name || null,
+    timestamp: new Date().toISOString(),
+  });
 });
 
 // Mount Authentication & Workspace Routes
